@@ -6,20 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 from plyfile import PlyData
 
-
-# camera intrinsic parameter
-
-K = np.array([
-    [1, 0, 0],
-    [0, 1, 0]
-])
-
-
-def random_rotation_matrix_3d():
-    A = np.random.uniform(-1, 1, (3, 3))
-    Q = np.dot(A, A.T)
-    R = np.linalg.svd(Q)[0]
-    return R
+from tomasi_kanade import TomasiKanade
 
 
 def read_object(filename):
@@ -32,30 +19,37 @@ def read_object(filename):
     return np.vstack((x, y, z))
 
 
-def motion_matrix(K, R):
-    return np.dot(K, R)
-
-
-def plot3d(X):
+def plot2d(X):
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot(X[0], X[1], X[2], '.')
+    ax = fig.add_subplot(111)
+    ax.plot(X[0], X[1], '.')
     ax.set_xlabel('x axis')
     ax.set_ylabel('y axis')
-    ax.set_zlabel('z axis')
-    ax.view_init(elev=135, azim=90)
-    ax.legend()
     ax.set_aspect('equal', 'datalim')
     plt.show()
 
 
-def motion_matrix(n_views):
-    M = []
-    for i in range(n_views):
-        R = random_rotation_matrix_3d()
-        M_i = motion_matrix(K, R)
-        M.append(M_i)
-    return np.vstack(M)
+def plot3d(*points):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    for i, P in enumerate(points):
+        ax.plot(P[0], P[1], P[2], '.', label=str(i))
+        ax.set_xlabel('x axis')
+        ax.set_ylabel('y axis')
+        ax.set_zlabel('z axis')
+        ax.legend()
+
+    ax.view_init(elev=135, azim=90)
+    ax.set_aspect('equal', 'datalim')
+    plt.show()
+
+
+def random_rotation_matrix_3d():
+    A = np.random.uniform(-1, 1, (3, 3))
+    Q = np.dot(A, A.T)
+    R = np.linalg.svd(Q)[0]
+    return R
 
 
 def measurement_matrix(M, X):
@@ -63,15 +57,14 @@ def measurement_matrix(M, X):
 
 
 class Camera(object):
-    def __init__(self):
-        self.image_points = []
+    def __init__(self, intrinsic_parameters):
+        self.intrinsic_parameters = intrinsic_parameters
+        self.rotation = np.eye(3)
+        self.translation = np.zeros(3)
 
-    def observe(self, image_points):
-        self.image_points.append(image_points)
-
-    @property
-    def measurement_matrix(self):
-        return np.vstack(self.image_points)
+    def set_pose(self, rotation, translation):
+        self.rotation = rotation
+        self.translation = translation
 
 
 class TargetObject(object):
@@ -91,64 +84,78 @@ class TargetObject(object):
         return np.dot(R, self.X) + np.outer(t, np.ones(self.n_points))
 
 
-def tomasi_kanade(W):
-    u, s, vh = np.linalg.svd(W, full_matrices=True)
+def take_picture(target_object, camera, noise_std=0.0):
 
-    u = u[:, 0:3]
-    s = s[0:3]
-    vh = vh[0:3, :]
-    M = u * s
-    S = vh
-
-    k = np.linalg.norm(M, axis=1).mean()
-    M = M / k
-    S = S * k
-    return M, S
-
-
-def take_picture(target_object, camera, camera_rotation, camera_translation):
     # Y: points seen from the camera coordinate
-    Y = target_object.observed(camera_rotation, camera_translation)
-    K = camera.intrinsic
+    Y = target_object.observed(camera.rotation, camera.translation)
+    K = camera.intrinsic_parameters
+
     image_points = np.dot(K, Y)  # project onto the image plane
 
-    noise = np.random.normal(0, noise_std, size=image_points.shape)
+    if noise_std == 0.0:
+        return image_points
 
-    camera.observe(image_points + noise)
-    return camera
+    noise = np.random.normal(0, noise_std, size=image_points.shape)
+    return image_points + noise
+
+
+def random_vector_3d(scale=1.0):
+    v = np.random.uniform(-1, 1, size=3)
+    v = v / np.linalg.norm(v)
+    return scale * v
+
+
+def normalize_object_size(X):
+    return X / np.linalg.norm(X, axis=0).mean()
 
 
 def main():
+    np.random.seed(1234)
+
     filename = sys.argv[1]
-    noise_std = 0.05
+
+    intrinsic_parameters = np.array([
+        [1, 0, 0],
+        [0, 1, 0]
+    ])
+
+    # standard deviation of noise
+    noise_std = 0.0
 
     X_true = read_object(filename)
+    X_true = normalize_object_size(X_true)
 
-    print(X_true)
+    indices = np.arange(0, X_true.shape[1], 100)
+    X_true = X_true[:, indices]
+
+    target_object = TargetObject(X_true)
+
     print(X_true.shape)
 
-    N = X_true.shape[0]
-    indices = np.arange(0, N, 100)
-    # plot3d(X_true[indices])
+    n_views = 50
 
-    n_views = 20
-    M_true = motion_matrix(n_views)
+    camera = Camera(intrinsic_parameters)
 
-    W_true = measurement_matrix(M_true, X_true)
-    noise = np.random.normal(0, noise_std, size=W_true.shape)
-    W = W_true + noise
+    tomasi_kanade = TomasiKanade(learning_rate=88e-3, n_epochs=200)
 
-    W = camera.measurement_matrix
+    for i in range(n_views):
+        R = random_rotation_matrix_3d()
+        t = random_vector_3d()
 
-    M, X = tk.run()
+        camera.set_pose(R, t)
 
-    op = OrthographicProjection(
-        learning_rate=1e-2,
-        n_epochs=200,
-        alpha=0.0,
-        regularization=None
-    )
-    M, X = op.remove_affine_ambiguity(M, X)
+        image_points = take_picture(target_object, camera, noise_std)
+        plot2d(image_points)
+        tomasi_kanade.add_image_points(image_points)
 
+    M, X = tomasi_kanade.run()
+
+    from rigid_motion import LeastSquaresRigidMotion, transform
+    s, R, t = LeastSquaresRigidMotion(X_true.T, X.T).solve()
+    X_true = np.array([transform(s, R, t, x) for x in X_true.T]).T
+
+    print("Error: {}".format(np.power(X_true - X, 2).sum(axis=0).mean()))
+
+    plot3d(X, X_true)
 
 main()
