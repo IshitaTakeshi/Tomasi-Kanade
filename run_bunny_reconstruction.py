@@ -136,7 +136,7 @@ def main():
 
     camera = Camera(intrinsic_parameters)
 
-    tomasi_kanade = TomasiKanade(learning_rate=88e-3, n_epochs=200)
+    tomasi_kanade = TomasiKanade()
 
     for i in range(n_views):
         R = random_rotation_matrix_3d()

@@ -1,12 +1,12 @@
 import numpy as np
 
-from affine_ambiguity import OrthographicProjection
+from affine_ambiguity import AffineCorrection
 from sfm import SFM
 
 
 class TomasiKanade(object):
-    def __init__(self, learning_rate=1e-2, n_epochs=20):
-        self.op = OrthographicProjection(learning_rate, n_epochs)
+    def __init__(self):
+        self.affine_correction = AffineCorrection()
         self.image_points = []
 
     def add_image_points(self, image_points):
@@ -31,6 +31,6 @@ class TomasiKanade(object):
         M = M / k
         X = X * k
 
-        M, X = self.op.remove_affine_ambiguity(M, X)
+        self.affine_correction.optimize(M, X)
 
-        return M, X
+        return self.affine_correction(M, X)
