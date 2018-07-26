@@ -10,19 +10,23 @@ Tomasi-Kanade法による3次元復元
 
 さっそくデモをお見せします．
 
-これらはある3次元の点の集合を撮影(2次元に投影)したものです．
-![2次元に投影されたうさぎさん]()
-![2次元に投影されたうさぎさん]()
-![2次元に投影されたうさぎさん]()
-![2次元に投影されたうさぎさん]()
+
+これらは3次元の点の集合を撮影(平面に投影)したものです．
+
+<img src="https://qiita-image-store.s3.amazonaws.com/0/46932/f3573bcc-81b3-ca81-711b-52744d41005b.png", width="600px" />
+<img src="https://qiita-image-store.s3.amazonaws.com/0/46932/5f3b7855-9ac1-dd2f-6e83-25dda3de7620.png", width="600px" />
+<img src="https://qiita-image-store.s3.amazonaws.com/0/46932/773ad5ab-7869-fd9a-7fb7-bda8980a5691.png", width="600px" />
+<img src="https://qiita-image-store.s3.amazonaws.com/0/46932/61d26521-792f-63a6-b16b-3c4600dcc98e.png", width="600px" />
 
 これらの画像をTomasi-Kanade法で処理すると，こんなふうにもとの3次元の点を復元することができます．
 
-![3次元復元されたうさぎさん1]()
-![3次元復元されたうさぎさん2]()
-![3次元復元されたうさぎさん3]()
-![回転する3次元のうさぎさんのgif]()
+<img src="https://qiita-image-store.s3.amazonaws.com/0/46932/fc0b140f-53b1-06d5-2d3f-492b398a9aa6.png", width="600px" />
+<img src="https://qiita-image-store.s3.amazonaws.com/0/46932/438f7b1d-5111-ac07-b5d8-03290cfb7916.png", width="600px" />
+<img src="https://qiita-image-store.s3.amazonaws.com/0/46932/2f6366bd-67da-23c6-a058-4b88046d5b90.png", width="600px" />
 
+<!--
+<img src="https://qiita-image-store.s3.amazonaws.com/0/46932/3a9f04b8-5a1e-cff2-a80c-c6aa5382a0c1.png", width="600px" />
+-->
 
 ## 3次元復元できる条件
 
@@ -40,14 +44,12 @@ Tomasi-Kanade法は1990年代に開発された手法ということもあり，
 
 ではさっそく手法を見ていきましょう．
 
-<!-- いきなり数式を出してもどの記号が何を表しているのかわからなくなってしまうので，例を交えながら説明していきます． -->
-
-
 今回復元するのはコンピュータビジョン界の人気者であるこのうさぎさんです．
 
-![うさぎさん画像]()
+<img src="https://qiita-image-store.s3.amazonaws.com/0/46932/d9ce3a17-7c7d-f61c-7958-560944c5b8c6.png", width="600px" />
 
-このうさぎさんはすでに3次元なのですが，これを仮想的にカメラで撮影し，得られた2次元の画像(点群)のみからうさぎさんを3次元復元してみます．
+このうさぎさんはすでに3次元なのですが，これを仮想的に"撮影"し，2次元の点群画像を得ます．
+Tomasi-Kanade法では，この得られた2次元の点群画像のみから，3次元のうさぎさんを復元することができます．
 
 ## 問題設定
 
@@ -498,4 +500,5 @@ Tomasi-Kanade法を実行する過程で観測値行列という行列を作り�
 [footnote] $M^{i}$はカメラの内部パラメータ$K \in \mathbb{R}^{2 \ times 3}$と姿勢を表現する行列$R^{i} \in \mathrm{SO}(3)$を用いて$M^{i} = R^{i}K$と表されます．この$K$の中身によって制約が変わってきます．今回は[正投影モデル](https://en.wikipedia.org/wiki/Orthographic_projection)を採用しているので$K^{i} = \begin{bmatrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \end{bmatrix}$です.
 
 [1] Tomasi Carlo and Takeo Kanade. "Shape and motion from image streams under orthography: a factorization method." International Journal of Computer Vision 9.2 (1992): 137-154.
+
 
