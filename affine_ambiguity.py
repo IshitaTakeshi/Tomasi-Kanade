@@ -5,6 +5,7 @@ import chainer
 from chainer import cuda
 from chainer import variable
 from chainer import initializers
+from chainer.training import extensions
 from chainer.training.updaters import StandardUpdater
 
 
@@ -49,12 +50,19 @@ class AffineTransformation(chainer.Chain):
             loss = 0
             for M_ in M.data:
                 loss += xp.power(xp.dot(M_, M_.T) - I, 2).sum()
-            return loss / F
+
+            if loss.data != 0:
+                loss = loss / F
+
+            chainer.reporter.report({'loss': loss}, self)
+
+            return loss
         return f
 
 
 class MotionMatrices(chainer.dataset.DatasetMixin):
     def __init__(self, M):
+        assert(M.shape[0] % 2 == 0)
         xp = cuda.get_array_module(M.data)
         F = M.shape[0] // 2
         self.M = xp.split(M, F)
@@ -76,20 +84,21 @@ class AffineCorrection(object):
         dataset = MotionMatrices(M)
         data_iter = chainer.iterators.SerialIterator(dataset, self.batchsize)
 
-        optimizer = chainer.optimizers.MomentumSGD()
+        optimizer = chainer.optimizers.MomentumSGD(lr=0.005)
         optimizer.setup(self.model)
         updater = StandardUpdater(data_iter, optimizer,
                                   loss_func=self.model.get_loss_func())
-        trainer = chainer.training.Trainer(updater, (self.epoch, 'epoch'))
-        trainer.run()
 
-        I = np.eye(2)
-        Q = self.model.Q.data
-        for i in range(len(dataset)):
-            M = dataset.get_example(i)
-            MQ = np.dot(M, Q)
-            MQQM = np.dot(MQ, MQ.T)
-            print(MQQM)
+        log_interval = (1, 'epoch')
+
+        trainer = chainer.training.Trainer(updater, (self.epoch, 'epoch'))
+        trainer.extend(extensions.LogReport(trigger=log_interval))
+        trainer.extend(
+            extensions.PrintReport(['epoch', 'iteration', 'main/loss']),
+            trigger=log_interval
+        )
+
+        trainer.run()
 
     def __call__(self, M, X):
         Q = self.model.Q.data  # TODO this can be a cupy array. Allow only numpy
