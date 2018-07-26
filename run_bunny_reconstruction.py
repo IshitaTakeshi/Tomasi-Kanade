@@ -147,37 +147,40 @@ def main():
     X_true = read_object(filename)
     X_true = normalize_object_size(X_true)
 
-    indices = np.arange(0, X_true.shape[1], 100)
+    # too many points in the file
+    indices = np.arange(0, X_true.shape[1], 20)
     X_true = X_true[:, indices]
+    print("X_true.shape: {}".format(X_true.shape))
+
+    color = np.mean(np.abs(X_true), axis=0)
+    color = color / np.max(color)
+
+    # plot3d(X_true.T, azim=90, elev=-90, color=color)
+    # plot3d(X_true.T, azim=-90, elev=90, color=color)
+
+    n_views = 128
 
     target_object = TargetObject(X_true)
-
-    print(X_true.shape)
-
-    n_views = 50
-
     camera = Camera(intrinsic_parameters)
-
     tomasi_kanade = TomasiKanade()
 
     for i in range(n_views):
+        # set camera pose randomly
         R = random_rotation_matrix_3d()
         t = random_vector_3d()
-
         camera.set_pose(R, t)
 
         image_points = take_picture(target_object, camera, noise_std)
-        plot2d(image_points)
+
+        # plot2d(image_points.T, color=color)
+        # plot2d(image_points.T, do_annotate=True)
+
         tomasi_kanade.add_image_points(image_points)
 
     M, X = tomasi_kanade.run()
 
-    from rigid_motion import LeastSquaresRigidMotion, transform
-    s, R, t = LeastSquaresRigidMotion(X_true.T, X.T).solve()
-    X_true = np.array([transform(s, R, t, x) for x in X_true.T]).T
-
-    print("Error: {}".format(np.power(X_true - X, 2).sum(axis=0).mean()))
-
-    plot3d(X, X_true)
+    plot3d(X.T, azim=0, elev=-90, color=color)
+    plot3d(X.T, azim=180, elev=90, color=color)
+    plot3d(X.T, azim=10, elev=-70, color=color)
 
 main()
