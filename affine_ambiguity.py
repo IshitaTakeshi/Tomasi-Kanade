@@ -75,7 +75,7 @@ class MotionMatrices(chainer.dataset.DatasetMixin):
 
 
 class AffineCorrection(object):
-    def __init__(self, epoch=40, batchsize=8):
+    def __init__(self, epoch=8, batchsize=2):
         self.model = AffineTransformation()
         self.batchsize = batchsize
         self.epoch = epoch
