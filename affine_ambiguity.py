@@ -1,6 +1,3 @@
-from numpy.linalg import inv
-import numpy as np
-
 import chainer
 from chainer import cuda
 from chainer import variable
@@ -101,7 +98,8 @@ class AffineCorrection(object):
         trainer.run()
 
     def __call__(self, M, X):
-        Q = self.model.Q.data  # TODO this can be a cupy array. Allow only numpy
-        M = np.dot(M, Q)
-        X = np.dot(inv(Q), X)
+        Q = self.model.Q
+        xp = cuda.get_array_module(Q.data)
+        M = xp.dot(M, Q)
+        X = xp.dot(xp.linalg.inv(Q.data), X)
         return M, X
