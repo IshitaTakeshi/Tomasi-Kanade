@@ -150,7 +150,6 @@ def main():
     # too many points in the file
     indices = np.arange(0, X_true.shape[1], 20)
     X_true = X_true[:, indices]
-    print("X_true.shape: {}".format(X_true.shape))
 
     color = np.mean(np.abs(X_true), axis=0)
     color = color / np.max(color)
