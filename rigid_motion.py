@@ -35,7 +35,7 @@ class LeastSquaresRigidMotion(object):
     Examples:
 
     >>> s, R, t = LeastSquaresRigidMotion(P, Q).solve()
-    >>> P = np.array([transform(s, R, t, p) for p in P])
+    >>> P = transform(s, R, t, P)
 
     """
 
@@ -47,6 +47,7 @@ class LeastSquaresRigidMotion(object):
             Q: Set of points of shape (n_image_points, n_channels)
                 to be used as a reference
         """
+
         if P.shape != Q.shape:
             raise ValueError("P and Q must be the same shape")
 
@@ -82,7 +83,7 @@ class LeastSquaresRigidMotion(object):
 
 
 def transform(s: float, R: np.ndarray,
-              t: np.ndarray, p: np.ndarray) -> np.ndarray:
+              t: np.ndarray, P: np.ndarray) -> np.ndarray:
     """
     Transform a given point :math:`\mathbf{p}` into
     :math:`\mathbf{q} = sR\mathbf{p} + \mathbf{t}` where
@@ -98,9 +99,15 @@ def transform(s: float, R: np.ndarray,
         s: Scaling factor
         R: Rotation matrix
         t: Translation vector
-        p: Point to be transformed
+        P: Points to be transformed of shape (n_image_points, n_channels)
 
     Returns:
         Transformed vector
     """
-    return s * np.dot(R, p) + t
+
+    if np.ndim(t) == 1:
+        t = t.reshape(-1, 1)  # align the dimension
+
+    P = s * np.dot(R, P.T) + t
+
+    return P.T
