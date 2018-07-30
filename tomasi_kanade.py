@@ -5,8 +5,8 @@ from sfm import SFM
 
 
 class TomasiKanade(object):
-    def __init__(self):
-        self.affine_correction = AffineCorrection()
+    def __init__(self, X_eval=None):
+        self.affine_correction = AffineCorrection(X_eval)
         self.image_points = []
 
     def add_image_points(self, image_points):

@@ -1,9 +1,15 @@
+import numpy as np
+
 import chainer
 from chainer import cuda
-from chainer import variable
 from chainer import initializers
+from chainer import iterators
+from chainer import optimizers
+from chainer import variable
 from chainer.training import extensions
 from chainer.training.updaters import StandardUpdater
+
+from rigid_motion import LeastSquaresRigidMotion, transform
 
 
 class AffineTransformation(chainer.Chain):
@@ -71,17 +77,41 @@ class MotionMatrices(chainer.dataset.DatasetMixin):
         return self.M[i]
 
 
+class Objects(chainer.dataset.DatasetMixin):
+    def __init__(self, X):
+        self.X = X
+
+    def __len__(self):
+        return 1
+
+    def get_example(self, i):
+        return self.X
+
+
+def frobenious_norm_squared(X):
+    return np.power(X, 2).sum()
+
+
 class AffineCorrection(object):
-    def __init__(self, epoch=8, batchsize=2):
+    def __init__(self, X_eval=None, epoch=8, batchsize=2):
         self.model = AffineTransformation()
-        self.batchsize = batchsize
+
+        self.X_eval = X_eval
         self.epoch = epoch
+        self.batchsize = batchsize
+
+        Q = self.model.Q
+        self.xp = cuda.get_array_module(Q.data)
 
     def optimize(self, M, X):
-        dataset = MotionMatrices(M)
-        data_iter = chainer.iterators.SerialIterator(dataset, self.batchsize)
+        data_iter = iterators.SerialIterator(MotionMatrices(M), self.batchsize)
+        object_iter = iterators.SerialIterator(
+            Objects(X),
+            1,
+            repeat=False
+        )
 
-        optimizer = chainer.optimizers.MomentumSGD(lr=0.005)
+        optimizer = optimizers.MomentumSGD(lr=0.004)
         optimizer.setup(self.model)
         updater = StandardUpdater(data_iter, optimizer,
                                   loss_func=self.model.get_loss_func())
@@ -89,17 +119,49 @@ class AffineCorrection(object):
         log_interval = (1, 'epoch')
 
         trainer = chainer.training.Trainer(updater, (self.epoch, 'epoch'))
+
+        trainer.extend(extensions.Evaluator(
+                object_iter,
+                self.model,
+                eval_func=self.get_recornstruction_error_func()
+            ),
+            trigger=(1, 'epoch')
+        )
+
         trainer.extend(extensions.LogReport(trigger=log_interval))
         trainer.extend(
-            extensions.PrintReport(['epoch', 'iteration', 'main/loss']),
+            extensions.PrintReport([
+                'epoch', 'iteration', 'main/loss',
+                'reconstruction_error'
+            ]),
             trigger=log_interval
         )
 
         trainer.run()
 
+    def transform_m(self, M, Q):
+        return self.xp.dot(M, Q)
+
+    def transform_x(self, X, Q):
+        xp = self.xp
+        return xp.dot(xp.linalg.inv(Q.data), X)
+
     def __call__(self, M, X):
         Q = self.model.Q
-        xp = cuda.get_array_module(Q.data)
-        M = xp.dot(M, Q)
-        X = xp.dot(xp.linalg.inv(Q.data), X)
+        M = self.transform_m(M, Q)
+        X = self.transform_x(X, Q)
         return M, X
+
+    def get_recornstruction_error_func(self):
+        def reconstruction_error(X):
+            X = self.transform_x(X[0], self.model.Q)
+            X, X_eval = X.T, self.X_eval.T
+
+            s, R, t = LeastSquaresRigidMotion(X, X_eval).solve()
+            X = transform(s, R, t, X)
+
+            error = frobenious_norm_squared(X_eval - X)
+
+            chainer.report({'reconstruction_error': error})
+            return error
+        return reconstruction_error

@@ -162,7 +162,7 @@ def main():
 
     target_object = TargetObject(X_true)
     camera = Camera(intrinsic_parameters)
-    tomasi_kanade = TomasiKanade()
+    tomasi_kanade = TomasiKanade(X_true)
 
     for i in range(n_views):
         # set camera pose randomly
