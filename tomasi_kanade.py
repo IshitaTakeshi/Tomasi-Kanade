@@ -31,6 +31,6 @@ class TomasiKanade(object):
         M = M / k
         X = X * k
 
-        self.affine_correction.optimize(M, X)
+        self.affine_correction.optimize(M, X.T)
 
-        return self.affine_correction(M, X)
+        return self.affine_correction(M, X.T)

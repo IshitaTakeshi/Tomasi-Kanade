@@ -145,7 +145,8 @@ class AffineCorrection(object):
 
     def transform_x(self, X, Q):
         xp = self.xp
-        return xp.dot(xp.linalg.inv(Q.data), X)
+        X = xp.dot(xp.linalg.inv(Q.data), X.T)
+        return X.T
 
     def __call__(self, M, X):
         Q = self.model.Q
@@ -156,12 +157,11 @@ class AffineCorrection(object):
     def get_recornstruction_error_func(self):
         def reconstruction_error(X):
             X = self.transform_x(X[0], self.model.Q)
-            X, X_eval = X.T, self.X_eval.T
 
-            s, R, t = LeastSquaresRigidMotion(X, X_eval).solve()
+            s, R, t = LeastSquaresRigidMotion(X, self.X_eval).solve()
             X = transform(s, R, t, X)
 
-            error = frobenious_norm_squared(X_eval - X)
+            error = frobenious_norm_squared(X - self.X_eval)
 
             chainer.report({'reconstruction_error': error})
             return error
