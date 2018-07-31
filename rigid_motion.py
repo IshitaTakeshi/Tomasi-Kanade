@@ -2,6 +2,23 @@ from numpy.testing import assert_array_almost_equal
 import numpy as np
 
 
+def random_rotation_matrix_3d():
+    A = np.random.uniform(-1, 1, (3, 3))
+    Q = np.dot(A, A.T)
+    R = np.linalg.svd(Q)[0]
+    return R
+
+
+def random_vector_3d(scale=1.0):
+    """
+    Generate a random 3D vector :math:`\mathbf{v}` such that
+        :math:`\mathbf{v}_{i} \in [-s, s)`
+    """
+    v = np.random.uniform(-1, 1, size=3)
+    v = v / np.linalg.norm(v)
+    return scale * v
+
+
 def calculate_rotation(X, Y):
     S = np.dot(X.T, Y)
 

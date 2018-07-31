@@ -67,11 +67,6 @@ def plot3d(P, do_annotate=False, elev=45, azim=0, color=None):
     plt.show()
 
 
-def random_rotation_matrix_3d():
-    A = np.random.uniform(-1, 1, (3, 3))
-    Q = np.dot(A, A.T)
-    R = np.linalg.svd(Q)[0]
-    return R
 
 
 def measurement_matrix(M, X):
@@ -121,10 +116,6 @@ def take_picture(target_object, camera, noise_std=0.0):
     return image_points + noise
 
 
-def random_vector_3d(scale=1.0):
-    v = np.random.uniform(-1, 1, size=3)
-    v = v / np.linalg.norm(v)
-    return scale * v
 
 
 def normalize_object_size(X):
