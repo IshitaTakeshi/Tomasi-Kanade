@@ -1,11 +1,18 @@
 import numpy as np
 
 from affine_ambiguity import AffineCorrection
-from sfm import SFM
 
 
 class TomasiKanade(object):
-    def __init__(self, X_eval=None):
+    """
+    The main process of the Tomasi-Kanade method
+
+    Args:
+        X_eval: 3D point cloud which will be used to evaluate
+        the reconstructed model
+    """
+
+    def __init__(self, X_eval: np.ndarray = None):
         self.affine_correction = AffineCorrection(X_eval)
         self.image_points = []
 
@@ -17,6 +24,15 @@ class TomasiKanade(object):
         return np.vstack(self.image_points)
 
     def run(self):
+        """
+        Run reconstruction
+
+        Returns:
+            M: Motion matrix of shape (2m, 3) where `m` is
+            the number of viewpoints
+            X: Reconstructed 3D points of shape (n, 3) where `n` is
+            the number of points in the reconstructed point cloud
+        """
         W = self.measurement_matrix
         u, s, vh = np.linalg.svd(W, full_matrices=True)
 

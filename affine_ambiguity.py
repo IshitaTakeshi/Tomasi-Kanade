@@ -31,13 +31,14 @@ class AffineTransformation(chainer.Chain):
 
         .. math::
             \\frac{1}{F}
-            \\sum_{f=1}^{F} ||M_{f}QQ^{\\top}M^{\\top} - I||^{2}_{F}
+            \\sum_{f=1}^{F} ||\hat{M}_{f}\hat{M}_{f}^{\\top} - I||^{2}_{F}
 
         where :math:`||\cdot||_F` denotes the Frobenious norm and
-        :math:`M_{f}` is a motion matrix of the :math:`f`-th view.
+        :math:`\hat{M}_{f}` is an estimated motion matrix corresponding to
+        the :math:`f`-th view.
 
         Args:
-            M: Motion matrix of shape (n_views * 2, n_image_points)
+            M: Estimated motion matrix of shape (n_views * 2, n_image_points)
             Q: The affine matrix of shape (3, 3)
         """
 
