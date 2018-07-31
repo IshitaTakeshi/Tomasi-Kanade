@@ -111,8 +111,8 @@ def main():
 
     for i in range(n_views):
         # set camera pose randomly
-        R = random_rotation_matrix_3d()
-        t = random_vector_3d()
+        R = rigid_motion.random_rotation_matrix_3d()
+        t = rigid_motion.random_vector_3d()
         camera.set_pose(R, t)
 
         image_points = take_picture(target_object, camera, noise_std)
