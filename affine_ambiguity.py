@@ -93,12 +93,13 @@ def frobenious_norm_squared(X):
 
 
 class AffineCorrection(object):
-    def __init__(self, X_eval=None, epoch=8, batchsize=2):
+    def __init__(self, X_eval=None, learning_rate=4e-3, epoch=8, batchsize=2):
         self.model = AffineTransformation()
 
         self.X_eval = X_eval
         self.epoch = epoch
         self.batchsize = batchsize
+        self.learning_rate = learning_rate
 
         Q = self.model.Q
         self.xp = cuda.get_array_module(Q.data)
@@ -111,7 +112,7 @@ class AffineCorrection(object):
             repeat=False
         )
 
-        optimizer = optimizers.MomentumSGD(lr=0.004)
+        optimizer = optimizers.MomentumSGD(lr=self.learning_rate)
         optimizer.setup(self.model)
         updater = StandardUpdater(data_iter, optimizer,
                                   loss_func=self.model.get_loss_func())
