@@ -52,7 +52,8 @@ class TargetObject(object):
         """
         R = camera_rotation
         t = camera_translation
-        return np.dot(R, self.X) + np.outer(t, np.ones(self.n_points))
+        return rigid_motion.transform(1, R, t, self.X)
+
 
 
 def take_picture(target_object, camera, noise_std=0.0):
