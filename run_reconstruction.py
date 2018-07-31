@@ -5,13 +5,12 @@ import numpy as np
 from plyfile import PlyData
 
 from tomasi_kanade import TomasiKanade
-
-
 from visualization import plot3d
 import rigid_motion
 
 
 def read_object(filename):
+    """Read a 3D object from a PLY file"""
     ply = PlyData.read(filename)
 
     vertex = ply['vertex']
@@ -22,15 +21,27 @@ def read_object(filename):
 
 
 def normalize_object_size(X):
+    """
+    Noramlize object size so that for
+    each object point :math:`\mathbf{x} \in X`
+
+
+        .. math::
+            \\frac{1}{|X|} \sum_{\mathbf{x} \in X} ||\mathbf{x}|| = 1
+    """
     return X / np.linalg.norm(X, axis=1).mean()
 
 
-def measurement_matrix(M, X):
-    return np.dot(M, X)
-
-
 class Camera(object):
-    def __init__(self, intrinsic_parameters):
+    """
+    Camera class
+
+    Args:
+        intrinsic_parameters: Intrinsic camera matrix
+        :math:`K \in R^{3 \times 3}`
+    """
+
+    def __init__(self, intrinsic_parameters: np.ndarray):
         self.intrinsic_parameters = intrinsic_parameters
         self.rotation = np.eye(3)
         self.translation = np.zeros(3)
@@ -41,7 +52,14 @@ class Camera(object):
 
 
 class Object3D(object):
-    def __init__(self, points):
+    """
+    3D object class.
+    This class wraps the observation process from a view point
+
+    Args:
+        points: Points of the 3D object
+    """
+    def __init__(self, points: np.ndarray):
         self.X = points
 
     @property
@@ -53,6 +71,7 @@ class Object3D(object):
                  camera_translation: np.ndarray):
         """
         Return 2D points projected onto the image plane
+
         Args:
             camera_rotation: Rotation matrix
             which represents the camera rotation
@@ -71,6 +90,8 @@ def take_picture(target_object: Object3D, camera: Camera, noise_std=0.0):
 
     Args:
         target_object: Object to be seen from the ``camera``
+        camera: Camera object which observes the target object
+        noise_std: Standard deviation of noise added in the observation process
     """
 
     # Y: points seen from the camera coordinate
@@ -115,7 +136,7 @@ def main():
 
     n_views = 128
 
-    target_object = TargetObject(X_true)
+    target_object = Object3D(X_true)
     camera = Camera(intrinsic_parameters)
     tomasi_kanade = TomasiKanade(X_true)
 
