@@ -153,8 +153,6 @@ def main():
     M, X = tomasi_kanade.run()
 
     plot3d(X, azim=0, elev=-90, color=color)
-    plot3d(X, azim=180, elev=90, color=color)
-    plot3d(X, azim=10, elev=-70, color=color)
 
 
 if __name__ == '__main__':
