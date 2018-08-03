@@ -3,7 +3,7 @@ Tomasi-Kanade module docs
 =========================
 
 
-.. automodule:: affine_ambiguity
+.. automodule:: affine_correction
     :members:
 .. automodule:: rigid_motion
     :members:

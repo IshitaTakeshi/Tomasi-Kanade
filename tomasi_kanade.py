@@ -1,6 +1,6 @@
 import numpy as np
 
-from affine_ambiguity import AffineCorrection
+from affine_correction import AffineCorrection
 
 
 class TomasiKanade(object):
