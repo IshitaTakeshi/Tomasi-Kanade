@@ -14,7 +14,7 @@ def random_rotation_matrix_3d():
 def random_vector_3d(scale=1.0):
     """
     Generate a random 3D vector :math:`\mathbf{v}` such that
-        :math:`\mathbf{v}_{i} \in [-s, s)`
+        :math:`\mathbf{v}_{i} \in [-s, s),\,i=1,2,3`
     """
     v = np.random.uniform(-1, 1, size=3)
     v = v / np.linalg.norm(v)
@@ -83,12 +83,9 @@ class LeastSquaresRigidMotion(object):
 
         Returns:
             tuple: (s, R, t) where
-                :math:`s`
-                    Scaling coefficient
-                :math:`R`
-                    Rotation matrix
-                :math:`\mathbf{t}`
-                    translation vector
+                - :math:`s`: Scaling coefficient
+                - :math:`R`: Rotation matrix
+                - :math:`\mathbf{t}`: translation vector
         """
 
         mean_p = np.mean(self.P, axis=0)
@@ -107,15 +104,12 @@ class LeastSquaresRigidMotion(object):
 def transform(s: float, R: np.ndarray,
               t: np.ndarray, P: np.ndarray) -> np.ndarray:
     """
-    Transform a given point :math:`\mathbf{p}` into
+    Transform each point :math:`\mathbf{p} \in P` into
     :math:`\mathbf{q} = sR\mathbf{p} + \mathbf{t}` where
 
-    :math:`s`
-        Scaling factor
-    :math:`R`
-        Rotation matrix
-    :math:`\mathbf{t}`
-        Translation vector
+    - :math:`s`: Scaling factor
+    - :math:`R`: Rotation matrix
+    - :math:`\mathbf{t}`: Translation vector
 
     Args:
         s: Scaling factor
