@@ -111,8 +111,15 @@ def take_picture(target_object: Object3D, camera: Camera, noise_std=0.0):
 def main():
     np.random.seed(1234)
 
+    if len(sys.argv) < 2:
+        print("Usage: $python3 run_reconstruction.py <path to PLY file>")
+        exit(0)
+
     filename = sys.argv[1]
 
+    # Camera intrinsic matrix
+    # In this case, the image coordinate is represented in a non-homogeneous 2D
+    # vector, therefore the intrinsic matrix is represented in a 2x3 matrix.
     intrinsic_parameters = np.array([
         [1, 0, 0],
         [0, 1, 0]
@@ -121,37 +128,44 @@ def main():
     # standard deviation of noise
     noise_std = 0.0
 
+    # Load the 3D object from the file
     X_true = read_object(filename)
     X_true = normalize_object_size(X_true)
 
-    # too many points in the file
+    # Too many points in the file. Reduce by indexing
     indices = np.arange(0, X_true.shape[0], 20)
     X_true = X_true[indices]
 
+    # Define a color for each point
     color = np.mean(np.abs(X_true), axis=1)
     color = color / np.max(color)
 
-    # plot3d(X_true.T, azim=90, elev=-90, color=color)
-    # plot3d(X_true.T, azim=-90, elev=90, color=color)
-
+    # Number of viewpoints to be used for reconstruction
     n_views = 128
 
-    target_object = Object3D(X_true)
-    camera = Camera(intrinsic_parameters)
-    tomasi_kanade = TomasiKanade(X_true)
+    target_object = Object3D(X_true)  # Create the target object
+    camera = Camera(intrinsic_parameters)  # Camera object to observe the target
+    # The ground truth object is to the TomasiKanade method, though, this is
+    # used only for the evaluation, not reconstruction
+    tomasi_kanade = TomasiKanade(X_eval=X_true)
 
     for i in range(n_views):
-        # set camera pose randomly
+        # Generate a random camera pose
         R = rigid_motion.random_rotation_matrix_3d()
         t = rigid_motion.random_vector_3d()
         camera.set_pose(R, t)
 
+        # Observe the 3D object by projecting it onto the image plane
         image_points = take_picture(target_object, camera, noise_std)
 
         tomasi_kanade.add_image_points(image_points)
 
+    # Run reconstruction
+    # M is a stacked motion matrices
+    # X contains the reconstructed object
     M, X = tomasi_kanade.run()
 
+    # Plot the result
     plot3d(X, azim=0, elev=-90, color=color)
 
 
