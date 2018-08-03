@@ -5,7 +5,7 @@ import numpy as np
 from plyfile import PlyData
 
 from tomasi_kanade import TomasiKanade
-from visualization import plot3d
+from visualization import plot2d, plot3d
 import rigid_motion
 
 
@@ -125,9 +125,6 @@ def main():
         [0, 1, 0]
     ])
 
-    # standard deviation of noise
-    noise_std = 0.0
-
     # Load the 3D object from the file
     X_true = read_object(filename)
     X_true = normalize_object_size(X_true)
@@ -143,11 +140,15 @@ def main():
     # Number of viewpoints to be used for reconstruction
     n_views = 128
 
+    # Standard deviation of noise
+    noise_std = 0.0
+
     target_object = Object3D(X_true)  # Create the target object
     camera = Camera(intrinsic_parameters)  # Camera object to observe the target
-    # The ground truth object is to the TomasiKanade method, though, this is
-    # used only for the evaluation, not reconstruction
-    tomasi_kanade = TomasiKanade(X_eval=X_true)
+
+    # The ground truth object `X_true` is passed to the TomasiKanade method,
+    # though, this is used only for the evaluation, not reconstruction
+    tomasi_kanade = TomasiKanade(X_eval=X_true, learning_rate=0.0027)
 
     for i in range(n_views):
         # Generate a random camera pose
@@ -166,7 +167,7 @@ def main():
     M, X = tomasi_kanade.run()
 
     # Plot the result
-    plot3d(X, azim=0, elev=-90, color=color)
+    plot3d(X, azim=180, elev=90, color=color)
 
 
 if __name__ == '__main__':
