@@ -9,7 +9,7 @@ class TomasiKanade(object):
 
     Args:
         X_eval: 3D point cloud which will be used to evaluate
-        the reconstructed model
+            the reconstructed model
     """
 
     def __init__(self, X_eval: np.ndarray = None):
@@ -28,10 +28,12 @@ class TomasiKanade(object):
         Run reconstruction
 
         Returns:
-            M: Motion matrix of shape (2m, 3) where `m` is
-            the number of viewpoints
-            X: Reconstructed 3D points of shape (n, 3) where `n` is
-            the number of points in the reconstructed point cloud
+            tuple: containing 2 elements:
+
+                - M: Motion matrix of shape (2m, 3) where `m` is
+                  the number of viewpoints
+                - X: Reconstructed 3D points of shape (n, 3) where `n` is
+                  the number of points in the reconstructed point cloud
         """
         W = self.measurement_matrix
         u, s, vh = np.linalg.svd(W, full_matrices=True)

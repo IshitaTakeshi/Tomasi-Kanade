@@ -38,7 +38,7 @@ class Camera(object):
 
     Args:
         intrinsic_parameters: Intrinsic camera matrix
-        :math:`K \in R^{3 \times 3}`
+            :math:`K \in R^{3 \times 3}`
     """
 
     def __init__(self, intrinsic_parameters: np.ndarray):
@@ -74,9 +74,9 @@ class Object3D(object):
 
         Args:
             camera_rotation: Rotation matrix
-            which represents the camera rotation
+                which represents the camera rotation
             camera_translation: Translation vector
-            which represents the camera position
+                which represents the camera position
         """
         R = camera_rotation
         t = camera_translation
@@ -85,8 +85,8 @@ class Object3D(object):
 
 def take_picture(target_object: Object3D, camera: Camera, noise_std=0.0):
     """
-    Project 3D points in 'target_object' onto the image plane defined
-    by 'camera'
+    Project 3D points in ``target_object`` onto the image plane defined
+    by `camera`
 
     Args:
         target_object: Object to be seen from the ``camera``
