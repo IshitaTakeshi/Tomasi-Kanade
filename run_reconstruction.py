@@ -98,7 +98,7 @@ def take_picture(target_object: Object3D, camera: Camera, noise_std=0.0):
     Y = target_object.observed(camera.rotation, camera.translation)
     K = camera.intrinsic_parameters
 
-    image_points = np.dot(K, Y.T)  # project onto the image plane
+    image_points = np.dot(K, Y.T).T  # project onto the image plane
 
     if noise_std == 0.0:
         return image_points
