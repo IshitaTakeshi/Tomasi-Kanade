@@ -25,7 +25,7 @@ pip3 install -r requirements.txt
 ## Run reconstruction
 
 1. Download [bunny.ply](https://raw.githubusercontent.com/opencv/opencv/master/samples/cpp/tutorial_code/viz/bunny.ply)
-2. Run `run_reconstruction.py bunnpy.ply`
+2. Run `python3 run_reconstruction.py bunnpy.ply`
 
 ## Citation
 
