@@ -120,6 +120,8 @@ def main():
     # Camera intrinsic matrix
     # In this case, the image coordinate is represented in a non-homogeneous 2D
     # vector, therefore the intrinsic matrix is represented in a 2x3 matrix.
+    # In this script, we assume the orthogonal projection as a camera
+    # projection model
     intrinsic_parameters = np.array([
         [1, 0, 0],
         [0, 1, 0]
