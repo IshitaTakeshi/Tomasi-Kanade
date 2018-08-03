@@ -54,6 +54,9 @@ class LeastSquaresRigidMotion(object):
     >>> s, R, t = LeastSquaresRigidMotion(P, Q).solve()
     >>> P = transform(s, R, t, P)
 
+    See :cite:`zinsser2005point` for the detailed method.
+
+        .. bibliography:: refs.bib
     """
 
     def __init__(self, P: np.ndarray, Q: np.ndarray):
