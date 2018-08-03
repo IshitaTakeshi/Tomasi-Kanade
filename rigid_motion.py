@@ -3,8 +3,10 @@ import numpy as np
 
 
 def random_rotation_matrix_3d():
-    A = np.random.uniform(-1, 1, (3, 3))
-    Q = np.dot(A, A.T)
+    """Generate a random matrix in :math:`\mathbb{SO}(3)`"""
+    A = np.random.uniform(-1, 1, (3, 3))  # Generate random matrix A
+    Q = np.dot(A, A.T)  # Q is a symmetric matrix
+    # Q is decomposed into RDR^T, where R is a rotation matrix
     R = np.linalg.svd(Q)[0]
     return R
 
