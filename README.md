@@ -6,15 +6,15 @@ Tomasi-Kanadde method can reconstruct a 3D object from 2D observations.
 
 For example, from the 2D points like below...
 
-<img src="images/projected2d-1.png" width="600px" />
-<img src="images/projected2d-2.png" width="600px" />
-<img src="images/projected2d-4.png" width="600px" />
+| <img src="images/projected2d-1.png" width="600px" /> | <img src="images/projected2d-2.png" width="600px" /> |
+|:-----------------------------------------------------|:-----------------------------------------------------|
+| <img src="images/projected2d-3.png" width="600px" /> | <img src="images/projected2d-4.png" width="600px" /> |
 
 Tomasi-Kanadde method can reconstruct the 3D object.
 
-<img src="images/reconstructed-1.png" width="600px" />
-<img src="images/reconstructed-2.png" width="600px" />
-<img src="images/reconstructed-3.png" width="600px" />
+| <img src="images/reconstructed-1.png" width="600px" /> | <img src="images/reconstructed-2.png" width="600px" /> |
+|:-------------------------------------------------------|:-------------------------------------------------------|
+| <img src="images/reconstructed-3.png" width="600px" /> | <img src="images/reconstructed-4.png" width="600px" /> |
 
 ## Install dependencies
 
