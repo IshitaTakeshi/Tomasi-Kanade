@@ -14,8 +14,8 @@ class TomasiKanade(object):
             which run in the reconstruction process
     """
 
-    def __init__(self, X_eval: np.ndarray = None):
-        self.affine_correction = AffineCorrection(X_eval)
+    def __init__(self, X_eval=None, learning_rate=4e-3):
+        self.affine_correction = AffineCorrection(X_eval, learning_rate)
         self.image_points = []
 
     def add_image_points(self, image_points: np.ndarray):
