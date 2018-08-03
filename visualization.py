@@ -1,3 +1,5 @@
+import numpy as np
+
 from matplotlib.animation import FuncAnimation
 from matplotlib.font_manager import FontProperties
 from matplotlib import pyplot as plt
@@ -15,14 +17,22 @@ def annotate(ax, P, labels=None):
         ax.text(*p, label, alpha=0.8, fontproperties=font)
 
 
-def plot2d(P, do_annotate=False, color=None):
+def plot2d(P: np.ndarray, do_annotate=False, color=None):
+    """
+    Plot 2D points
+
+    Args:
+        P: 2D array of shape (n_points, 2)
+        do_annotate: Annotate points if True
+        color: Color of points
+    """
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
     ax.scatter(P[:, 0], P[:, 1], c=color)
 
     if do_annotate:
-        annotate(ax, P, labels=range(0, len(P), 50))
+        annotate(ax, P)
 
     ax.set_xlabel('x axis')
     ax.set_ylabel('y axis')
@@ -31,7 +41,17 @@ def plot2d(P, do_annotate=False, color=None):
     plt.show()
 
 
-def plot3d(P, do_annotate=False, elev=45, azim=0, color=None):
+def plot3d(P: np.ndarray, do_annotate=False, color=None, elev=45, azim=0):
+    """
+    Plot 3D points
+
+    Args:
+        P: 3D array of shape (n_points, 3)
+        do_annotate: Annotate points if True
+        color: Color of points
+        elev: Elevation of the viewpoint
+        azim: Azimuth angle of the viewpoint
+    """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 

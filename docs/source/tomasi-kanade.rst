@@ -11,3 +11,5 @@ Tomasi-Kanade module docs
     :members:
 .. automodule:: tomasi_kanade
     :members:
+.. automodule:: visualization
+    :members:
