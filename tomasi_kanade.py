@@ -25,6 +25,9 @@ class TomasiKanade(object):
         Args:
             image_points: Image points of shape (n_points, 2)
         """
+
+        mean = np.mean(image_points, axis=0, keepdims=True)
+        image_points = image_points - mean
         self.image_points.append(image_points.T)
 
     @property
