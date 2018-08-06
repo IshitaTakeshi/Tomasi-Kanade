@@ -1,0 +1,6 @@
+numpy
+matplotlib
+chainer
+plyfile
+sphinx
+sphinxcontrib-bibtex
