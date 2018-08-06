@@ -153,13 +153,14 @@ class AffineCorrection:
 
         trainer = chainer.training.Trainer(updater, (self.epoch, 'epoch'))
 
-        trainer.extend(extensions.Evaluator(
-                object_iter,
-                self.model,
-                eval_func=self.get_recornstruction_error_func()
-            ),
-            trigger=(1, 'epoch')
-        )
+        if self.X_eval is not None:
+            trainer.extend(extensions.Evaluator(
+                    object_iter,
+                    self.model,
+                    eval_func=self.get_recornstruction_error_func()
+                ),
+                trigger=(1, 'epoch')
+            )
 
         trainer.extend(extensions.LogReport(trigger=log_interval))
         trainer.extend(
