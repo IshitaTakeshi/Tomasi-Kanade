@@ -57,6 +57,8 @@ class TomasiKanade(object):
         M = u * s
         X = vh
 
+        # normalize the matrix entries to make
+        # the affine correction optimization stable
         k = np.linalg.norm(M, axis=1).mean()
         M = M / k
         X = X * k
