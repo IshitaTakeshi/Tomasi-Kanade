@@ -1,4 +1,4 @@
-# Implementation of the Tomasi-Kanade method
+# Implementation of Tomasi-Kanade method
 
 ## Demo
 
