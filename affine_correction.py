@@ -7,7 +7,7 @@ from chainer import iterators
 from chainer import optimizers
 from chainer import variable
 from chainer.training import extensions
-from chainer.training.updaters import StandardUpdater
+from chainer.training import StandardUpdater
 
 from rigid_motion import LeastSquaresRigidMotion, transform
 
@@ -153,13 +153,14 @@ class AffineCorrection:
 
         trainer = chainer.training.Trainer(updater, (self.epoch, 'epoch'))
 
-        trainer.extend(extensions.Evaluator(
-                object_iter,
-                self.model,
-                eval_func=self.get_recornstruction_error_func()
-            ),
-            trigger=(1, 'epoch')
-        )
+        if self.X_eval is not None:
+            trainer.extend(extensions.Evaluator(
+                    object_iter,
+                    self.model,
+                    eval_func=self.get_recornstruction_error_func()
+                ),
+                trigger=(1, 'epoch')
+            )
 
         trainer.extend(extensions.LogReport(trigger=log_interval))
         trainer.extend(
@@ -173,7 +174,7 @@ class AffineCorrection:
         trainer.run()
 
     def transform_m(self, M, Q):
-        return self.xp.dot(M, Q)
+        return self.xp.dot(M, Q.data)
 
     def transform_x(self, X, Q):
         xp = self.xp

@@ -131,10 +131,6 @@ def main():
     X_true = read_object(filename)
     X_true = normalize_object_size(X_true)
 
-    # Too many points in the file. Reduce by indexing
-    indices = np.arange(0, X_true.shape[0], 20)
-    X_true = X_true[indices]
-
     # Define a color for each point
     color = np.mean(np.abs(X_true), axis=1)
     color = color / np.max(color)
