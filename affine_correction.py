@@ -174,7 +174,7 @@ class AffineCorrection:
         trainer.run()
 
     def transform_m(self, M, Q):
-        return self.xp.dot(M, Q)
+        return self.xp.dot(M, Q.data)
 
     def transform_x(self, X, Q):
         xp = self.xp
