@@ -7,7 +7,7 @@ from chainer import iterators
 from chainer import optimizers
 from chainer import variable
 from chainer.training import extensions
-from chainer.training.updaters import StandardUpdater
+from chainer.training import StandardUpdater
 
 from rigid_motion import LeastSquaresRigidMotion, transform
 
