@@ -73,8 +73,6 @@ def plot2d(P: np.ndarray, do_annotate=False, color=None):
     ax.set_ylabel('y axis')
     ax.set_aspect('equal', 'datalim')
 
-    plt.show()
-
 
 def plot3d(P: np.ndarray, do_annotate=False, color=None, elev=45, azim=0):
     """
@@ -87,6 +85,10 @@ def plot3d(P: np.ndarray, do_annotate=False, color=None, elev=45, azim=0):
         elev: Elevation of the viewpoint
         azim: Azimuth angle of the viewpoint
     """
+
+    if color is None:
+        color = object_color(P)
+
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
@@ -99,6 +101,25 @@ def plot3d(P: np.ndarray, do_annotate=False, color=None, elev=45, azim=0):
     ax.set_ylabel('y axis')
     ax.set_zlabel('z axis')
     ax.view_init(elev, azim)
-    ax.set_aspect('equal', 'datalim')
+    set_aspect_equal(ax)
 
-    plt.show()
+
+def plot_result(X, viewpoints):
+    # Define a color for each point
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    V = viewpoints
+    ax.scatter(V[:, 0], V[:, 1], V[:, 2],
+               c='r', marker='s', label='viewpoints')
+
+    color = object_color(X)
+    ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=color)
+
+    ax.set_xlabel('x axis')
+    ax.set_ylabel('y axis')
+    ax.set_zlabel('z axis')
+    ax.legend()
+
+    set_aspect_equal(ax)
