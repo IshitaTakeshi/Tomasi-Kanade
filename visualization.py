@@ -6,6 +6,11 @@ from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 
+def object_color(X):
+    color = np.mean(np.abs(X), axis=1)
+    return color / np.max(color)
+
+
 def annotate(ax, P, labels=None):
     if labels is None:
         labels = range(len(P))
