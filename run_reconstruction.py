@@ -4,8 +4,10 @@ import numpy as np
 
 from plyfile import PlyData
 
+from matplotlib import pyplot as plt
+
 from tomasi_kanade import TomasiKanade
-from visualization import plot2d, plot3d
+from visualization import plot3d, plot_result
 import rigid_motion
 
 
@@ -107,6 +109,17 @@ def take_picture(target_object: Object3D, camera: Camera, noise_std=0.0):
     return image_points + noise
 
 
+def to_viewpoints(M):
+    x = np.array([1, 0, 0])
+
+    def to_viewpoint(M):
+        m = np.cross(M[0], M[1])
+        R = np.vstack((M, m))
+        return np.dot(R, x)
+
+    F = M.shape[0] // 2
+    return np.array([to_viewpoint(M_) for M_ in np.split(M, F)])
+
 
 def main():
     np.random.seed(1234)
@@ -130,10 +143,6 @@ def main():
     # Load the 3D object from the file
     X_true = read_object(filename)
     X_true = normalize_object_size(X_true)
-
-    # Define a color for each point
-    color = np.mean(np.abs(X_true), axis=1)
-    color = color / np.max(color)
 
     # Number of viewpoints to be used for reconstruction
     n_views = 128
@@ -164,8 +173,12 @@ def main():
     # X contains the reconstructed object
     M, X = tomasi_kanade.run()
 
-    # Plot the result
-    plot3d(X, azim=180, elev=90, color=color)
+    V = to_viewpoints(M)
+
+    plot3d(X, azim=180, elev=90)
+    plot_result(X, V)
+    plt.show()
+
 
 
 if __name__ == '__main__':
