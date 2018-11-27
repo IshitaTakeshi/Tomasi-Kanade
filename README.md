@@ -24,8 +24,18 @@ pip3 install -r requirements.txt
 
 ## Run reconstruction
 
-1. Download [bunny.ply](https://raw.githubusercontent.com/opencv/opencv/master/samples/cpp/tutorial_code/viz/bunny.ply)
-2. Run `python3 run_reconstruction.py bunny.ply`
+Download and extract the dataset
+
+```
+wget -c http://graphics.stanford.edu/pub/3Dscanrep/bunny.tar.gz
+tar xvf bunny.tar.gz
+```
+
+Run reconstruction 
+
+````
+python3 run_reconstruction.py bunny/reconstruction/bun_zipper_res4.ply
+```
 
 ## Documentation
 
