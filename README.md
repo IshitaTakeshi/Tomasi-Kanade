@@ -33,7 +33,7 @@ tar xvf bunny.tar.gz
 
 Run reconstruction 
 
-````
+```
 python3 run_reconstruction.py bunny/reconstruction/bun_zipper_res4.ply
 ```
 
