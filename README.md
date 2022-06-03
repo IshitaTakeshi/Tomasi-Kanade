@@ -2,7 +2,7 @@
 
 ## Demo
 
-Tomasi-Kanadde method can reconstruct a 3D object from 2D observations.
+Tomasi-Kanade method can reconstruct a 3D object from 2D observations.
 
 For example, from the 2D points like below...
 
