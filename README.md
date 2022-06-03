@@ -10,7 +10,7 @@ For example, from the 2D points like below...
 |:-----------------------------------------------------|:-----------------------------------------------------|
 | <img src="images/projected2d-3.png" width="600px" /> | <img src="images/projected2d-4.png" width="600px" /> |
 
-Tomasi-Kanadde method can reconstruct the 3D object.
+Tomasi-Kanade method can reconstruct the 3D object.
 
 | <img src="images/reconstructed-1.png" width="600px" /> | <img src="images/reconstructed-2.png" width="600px" /> |
 |:-------------------------------------------------------|:-------------------------------------------------------|
